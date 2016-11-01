@@ -503,7 +503,7 @@
                         );
                     // Preserve time selection when date changed
                     var prevDate = self._d || opts.defaultDate;
-                    if (prevDate && isDate(prevDate) && opts.showTime) {
+                    if (prevDate && isDate(prevDate)) {
                         newDate.setHours(prevDate.getHours());
                         newDate.setMinutes(prevDate.getMinutes());
                         if (opts.showSeconds) {
@@ -700,9 +700,27 @@
             }
         }
 
-        var defDate = opts.defaultDate;
+        var defDate = opts.defaultDate,
+            hoursCoeff, minutesCoeff, secondsCoeff;
 
         if (isDate(defDate)) {
+            if (opts.incrementHourBy > 1) {
+                hoursCoeff = 1000 * 60 * 60 * opts.incrementHourBy;
+                defDate = new Date(Math.round(defDate.getTime() / hoursCoeff) * hoursCoeff);
+            }
+
+            if (opts.incrementMinuteBy > 1) {
+                minutesCoeff = 1000 * 60 * opts.incrementMinuteBy;
+                defDate = new Date(Math.round(defDate.getTime() / minutesCoeff) * minutesCoeff);
+            }
+
+            if (opts.incrementSecondBy > 1) {
+                secondsCoeff = 1000 * opts.incrementSecondBy;
+                defDate = new Date(Math.round(defDate.getTime() / secondsCoeff) * secondsCoeff);
+            }
+
+            opts.defaultDate = defDate;
+
             if (opts.setDefaultDate) {
                 self.setDate(defDate, true);
             } else {
@@ -893,7 +911,7 @@
             if (this._o.showTime && !this._o.showSeconds) {
                 this._d.setSeconds(0);
             } else if (!this._o.showTime) {
-                setToStartOfDay(this._d);
+                //setToStartOfDay(this._d);
             }
 
             this.gotoDate(this._d);
@@ -1024,7 +1042,7 @@
         setMinDate: function(value)
         {
             if(value instanceof Date) {
-                if (!this._o.showTime) setToStartOfDay(value);
+                //if (!this._o.showTime) setToStartOfDay(value);
                 this._o.minDate = value;
                 this._o.minYear  = value.getFullYear();
                 this._o.minMonth = value.getMonth();
@@ -1043,7 +1061,7 @@
         setMaxDate: function(value)
         {
             if(value instanceof Date) {
-                if (!this._o.showTime) setToStartOfDay(value);
+                //if (!this._o.showTime) setToStartOfDay(value);
                 this._o.maxDate = value;
                 this._o.maxYear = value.getFullYear();
                 this._o.maxMonth = value.getMonth();
@@ -1191,7 +1209,7 @@
                 before = new Date(year, month, 1).getDay(),
                 data   = [],
                 row    = [];
-            if (!opts.showTime) setToStartOfDay(now);
+            //if (!opts.showTime) setToStartOfDay(now);
             if (opts.firstDay > 0) {
                 before -= opts.firstDay;
                 if (before < 0) {
